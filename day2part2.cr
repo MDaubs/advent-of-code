@@ -27,11 +27,11 @@ struct Instructions
   end
 end
 
-class FigureOut
+class Keypad
   def initialize(@instructions : Instructions)
   end
 
-  def the_code
+  def code
     starting_key = 5.to_u8
 
     @instructions.lines.map { |line|
@@ -46,14 +46,14 @@ require "spec"
 
 describe "first example" do
   it "produces the correct bathroom code" do
-    figure_out = FigureOut.new(Instructions.new("ULL\nRRDDD\nLURDL\nUUUUD"))
-    figure_out.the_code.should eq([1, 9, 8, 5])
+    keypad = Keypad.new(Instructions.new("ULL\nRRDDD\nLURDL\nUUUUD"))
+    keypad.code.should eq([1, 9, 8, 5])
   end
 end
 
 describe "challenge example" do
   it "produces the correct bathroom code" do
-    figure_out = FigureOut.new(Instructions.new(File.read("day2.input")))
-    figure_out.the_code.should eq([8, 2, 9, 5, 8])
+    keypad = Keypad.new(Instructions.new(File.read("day2.input")))
+    keypad.code.should eq([8, 2, 9, 5, 8])
   end
 end
