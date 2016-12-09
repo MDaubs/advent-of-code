@@ -29,7 +29,7 @@ struct Instructions
 end
 
 class Keypad
-  def initialize(@grid : Array(Array(Key)), @instructions : Instructions)
+  def initialize(@grid : Array(Array(Key?)), @instructions : Instructions)
   end
 
   def code
@@ -65,42 +65,22 @@ class Keypad
 
   def key_above(key : Key)
     row, col = coordinates_of(key)
-
-    if row == 0
-      nil
-    else
-      @grid[row - 1][col]
-    end
+    @grid[row - 1][col]
   end
 
   def key_below(key : Key)
     row, col = coordinates_of(key)
-
-    if row == @grid.size - 1
-      nil
-    else
-      @grid[row + 1][col]
-    end
+    @grid[row + 1][col]
   end
 
   def key_left_of(key : Key)
     row, col = coordinates_of(key)
-
-    if col == 0
-      nil
-    else
-      @grid[row][col - 1]
-    end
+    @grid[row][col - 1]
   end
 
   def key_right_of(key : Key)
     row, col = coordinates_of(key)
-
-    if col == @grid[row].size - 1
-      nil
-    else
-      @grid[row][col + 1]
-    end
+    @grid[row][col + 1]
   end
 end
 
@@ -108,9 +88,11 @@ require "spec"
 
 describe "Day 2" do
   grid = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9']
+    [nil, nil, nil, nil, nil] of Key?,
+    [nil, '1', '2', '3', nil],
+    [nil, '4', '5', '6', nil],
+    [nil, '7', '8', '9', nil],
+    [nil, nil, nil, nil, nil] of Key?
   ]
 
   describe "first example" do
