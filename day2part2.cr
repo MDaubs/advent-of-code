@@ -109,3 +109,22 @@ describe "Day 2" do
     end
   end
 end
+
+describe "Day 2 part 2" do
+  grid = [
+    [nil, nil, nil, nil, nil, nil, nil] of Key?,
+    [nil, nil, nil, '1', nil, nil, nil],
+    [nil, nil, '2', '3', '4', nil, nil],
+    [nil, '5', '6', '7', '8', '9', nil],
+    [nil, nil, 'A', 'B', 'C', nil, nil],
+    [nil, nil, nil, 'D', nil, nil, nil],
+    [nil, nil, nil, nil, nil, nil, nil] of Key?
+  ]
+
+  describe "challenge example" do
+    it "produces the correct bathroom code" do
+      keypad = Keypad.new(grid, Instructions.new(File.read("day2.input")))
+      keypad.code.should eq(['B', '3', 'D', 'B', '8'])
+    end
+  end
+end
