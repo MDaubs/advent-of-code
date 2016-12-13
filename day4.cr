@@ -6,9 +6,20 @@ struct EncryptedRoomEntry
   @sector_id : UInt32
   @checksum : String
 
+  ALPHABET = ('a'..'z').to_a
+
   getter sector_id
 
   def initialize(@encrypted_name, @sector_id, @checksum)
+  end
+
+  def name
+    shifted_alphabet = ALPHABET.rotate(@sector_id.to_i % 26)
+
+    @encrypted_name
+      .each_char
+      .map { |char| char == '-' ? ' ' : shifted_alphabet[char.ord - 97] }
+      .join
   end
 
   def real?
@@ -70,7 +81,21 @@ describe "Day 4" do
     EncryptedListOfRooms.new(input).select(&.real?).map(&.sector_id).sum.should eq(1514)
   end
 
-  it "sums the challenge input" do
+  it "sums the first challenge input" do
     EncryptedListOfRooms.new(File.read("day4.input")).select(&.real?).map(&.sector_id).sum.should eq(137896)
+  end
+
+  it "decodes the sample name" do
+    EncryptedListOfRooms.new("qzmt-zixmtkozy-ivhz-343[abcde]").first.name.should eq("very encrypted name")
+  end
+
+  it "returns the sector id of the North Pole" do
+    EncryptedListOfRooms
+      .new(File.read("day4.input"))
+      .select(&.real?)
+      .find { |room| room.name == "northpole object storage" }
+      .not_nil!
+      .sector_id
+      .should eq(501)
   end
 end
