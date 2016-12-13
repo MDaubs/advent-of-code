@@ -12,13 +12,7 @@ struct EncryptedRoomEntry
   end
 
   def real?
-    @checksum == letter_counts
-      .to_a
-      .sort { |(letter1, _), (letter2, _)| letter1 <=> letter2 }
-      .sort { |(_, count1), (_, count2)| -1 * (count1 <=> count2) }
-      .first(5)
-      .map(&.first)
-      .join
+    @checksum == calculated_checksum
   end
 
   private def letter_counts
@@ -30,6 +24,15 @@ struct EncryptedRoomEntry
 
       counts
     }
+  end
+
+  private def calculated_checksum
+    letter_counts
+      .to_a
+      .sort { |(let1, cnt1), (let2, cnt2)| cnt1 == cnt2 ? let1 <=> let2 : -1 * (cnt1 <=> cnt2) }
+      .first(5)
+      .map(&.first)
+      .join
   end
 end
 
@@ -65,5 +68,9 @@ describe "Day 4" do
     }
 
     EncryptedListOfRooms.new(input).select(&.real?).map(&.sector_id).sum.should eq(1514)
+  end
+
+  it "sums the challenge input" do
+    EncryptedListOfRooms.new(File.read("day4.input")).select(&.real?).map(&.sector_id).sum.should eq(137896)
   end
 end
