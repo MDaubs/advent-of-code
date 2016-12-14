@@ -2,15 +2,24 @@ require "openssl"
 require "spec"
 
 module Day5
-  alias DecryptedChar = {Char, UInt32}
-  alias SpecialHash = {String, UInt32}
-
   def self.decrypt(crypted : String)
-    SpecialHashes.new(crypted).first(8).map { |(hash, index)| {hash[5], index} }.to_a.map(&.first).join
+    SpecialHashes.new(crypted).first(8).map(&.[5]).join
+  end
+
+  def self.decrypt2(crypted : String)
+    results = StaticArray(Char?, 8).new(nil)
+
+    SpecialHashes
+      .new(crypted)
+      .take_while { results.any?(&.nil?) }
+      .select { |hash| ('0'..'7').includes?(hash[5]) }
+      .each { |hash| results[hash[5].to_u32] ||= hash[6] }
+
+    results.map(&.not_nil!).join
   end
 
   class SpecialHashes
-    include Iterator(SpecialHash)
+    include Iterator(String)
 
     @index = 0_u32
 
@@ -21,8 +30,8 @@ module Day5
       while
         hash = OpenSSL::MD5.hash("#{@prefix}#{@index}").to_slice.hexstring
         @index += 1
-        return {hash, @index - 1} if hash.starts_with?("00000")
-        raise "Gave up searching" if @index == 10_000_000
+        return hash if hash.starts_with?("00000")
+        raise "Gave up searching" if @index == 100_000_000
       end
 
       raise "This should never happen but the compiler needs to be assured we can't return nil."
@@ -37,5 +46,13 @@ describe "Day 5" do
 
   it "determines the password for door cxdnnyjw" do
     Day5.decrypt("cxdnnyjw").should eq("f77a0e6e")
+  end
+
+  it "determines the password for the second door abc is 05ace8e3" do
+    Day5.decrypt2("abc").should eq("05ace8e3")
+  end
+
+  it "determines the password for the second door cxdnnyjw is something" do
+    Day5.decrypt2("cxdnnyjw").should eq("999828ec")
   end
 end
